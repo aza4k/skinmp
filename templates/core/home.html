@@ -1,0 +1,143 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block content %}
+<!-- Hero Section / Welcome -->
+{% if user.is_authenticated %}
+<div class="row mb-5 fade-in">
+    <div class="col-12">
+        <div class="glass-card p-4 position-relative overflow-hidden">
+            <div class="position-absolute top-0 end-0 p-3 opacity-25">
+                <i class="bi bi-controller display-1 text-primary-accent"></i>
+            </div>
+            <div class="row align-items-center position-relative z-1">
+                <div class="col-md-8">
+                    <h2 class="mb-2">Welcome back, <span class="text-primary-accent">{{ user.username }}</span>!</h2>
+                    <p class="text-secondary mb-0">Ready to trade? You have <strong class="text-success">{{
+                            user.balance_active }} TON</strong> available.</p>
+                </div>
+                <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                    <a href="{% url 'core:deposit_funds' %}" class="btn btn-outline-light me-2">
+                        <i class="bi bi-wallet2 me-1"></i> Top Up
+                    </a>
+                    <a href="{% url 'core:sell_item' %}" class="btn btn-primary-accent">
+                        <i class="bi bi-plus-lg me-1"></i> List Item
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="row mb-5 py-5 fade-in">
+    <div class="col-lg-8 mx-auto text-center">
+        <h1 class="display-4 fw-bold mb-4">Trade CS2 Skins on <span class="text-primary-accent">TON</span></h1>
+        <p class="lead text-secondary mb-5">The most secure and fastest way to buy and sell Counter-Strike 2 skins using
+            The Open Network.</p>
+
+        <div class="d-flex justify-content-center gap-3">
+            <a href="{% url 'social:begin' 'steam' %}" class="btn btn-primary-accent btn-lg px-4">
+                <i class="bi bi-steam me-2"></i>Login with Steam
+            </a>
+            <a href="#listings" class="btn btn-outline-light btn-lg px-4">
+                Browse Market
+            </a>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Active Listings -->
+<div id="listings" class="row mb-4 align-items-center">
+    <div class="col">
+        <h3 class="mb-0"><i class="bi bi-fire text-danger me-2"></i>Hot Listings</h3>
+    </div>
+    <div class="col-auto">
+        <a href="{% url 'core:browse_listings' %}" class="btn btn-link text-decoration-none text-primary-accent">
+            View All <i class="bi bi-arrow-right"></i>
+        </a>
+    </div>
+</div>
+
+{% if listings %}
+<div class="row g-4 mb-5">
+    {% for listing in listings %}
+    <div class="col-md-6 col-lg-4 col-xl-3 fade-in" style="animation-delay: {{ forloop.counter0|add:1 }}00ms">
+        <div class="card listing-card h-100">
+            <!-- Image placeholder - in prod this would be the skin image -->
+            <div class="card-img-top bg-dark d-flex align-items-center justify-content-center" style="height: 200px;">
+                <i class="bi bi-image text-secondary fs-1"></i>
+            </div>
+
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <h5 class="card-title text-truncate mb-0" title="{{ listing.market_name }}">{{ listing.market_name
+                        }}</h5>
+                </div>
+
+                <div class="d-flex align-items-center mb-3">
+                    <img src="https://ui-avatars.com/api/?name={{ listing.seller.username }}&background=random"
+                        class="rounded-circle me-2" width="20" height="20">
+                    <small class="text-secondary">{{ listing.seller.username }}</small>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-end">
+                    <div class="price-tag">{{ listing.price_ton }} <small class="fs-6 text-muted">TON</small></div>
+                    <a href="{% url 'core:listing_detail' listing.id %}" class="btn btn-sm btn-primary-accent">
+                        View
+                    </a>
+                </div>
+            </div>
+
+            <div class="card-footer bg-transparent border-top border-secondary border-opacity-10 py-2">
+                <small class="text-muted">
+                    <i class="bi bi-clock me-1"></i> {{ listing.created_at|timesince }} ago
+                </small>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="row">
+    <div class="col-12">
+        <div class="alert glass-alert text-center py-5">
+            <i class="bi bi-inbox fs-1 d-block mb-3 text-secondary"></i>
+            <h5>No listings found</h5>
+            <p class="text-muted">Be the first to list an item on the marketplace!</p>
+            {% if user.is_authenticated %}
+            <a href="{% url 'core:sell_item' %}" class="btn btn-primary-accent mt-2">Create Listing</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Features -->
+{% if not user.is_authenticated %}
+<div class="row g-4 py-5 mt-4 border-top border-secondary border-opacity-10">
+    <div class="col-md-4 text-center">
+        <div class="stat-card h-100">
+            <i class="bi bi-shield-check display-5 text-success mb-3"></i>
+            <h4>Secure P2P</h4>
+            <p class="text-secondary">Funds are held in escrow until the item is successfully transferred.</p>
+        </div>
+    </div>
+    <div class="col-md-4 text-center">
+        <div class="stat-card h-100">
+            <i class="bi bi-lightning-charge display-5 text-warning mb-3"></i>
+            <h4>Instant</h4>
+            <p class="text-secondary">TON blockchain ensures lightning fast deposits and withdrawals.</p>
+        </div>
+    </div>
+    <div class="col-md-4 text-center">
+        <div class="stat-card h-100">
+            <i class="bi bi-wallet2 display-5 text-primary-accent mb-3"></i>
+            <h4>Low Fees</h4>
+            <p class="text-secondary">Minimal platform fees compared to traditional marketplaces.</p>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,78 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Settings - SkinMP{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center animate-on-scroll">
+    <div class="col-lg-8">
+        <h1 class="mb-4"><i class="bi bi-gear text-primary-accent me-2"></i>Settings</h1>
+
+        <div class="glass-card mb-5">
+            <div class="card-header bg-transparent border-bottom border-secondary border-opacity-10 p-4">
+                <h5 class="mb-0">Profile Information</h5>
+            </div>
+            <div class="card-body p-4">
+                <div class="d-flex align-items-center mb-4">
+                    <img src="https://ui-avatars.com/api/?name={{ user.username }}&background=random"
+                        class="rounded-circle me-3" width="64" height="64">
+                    <div>
+                        <h4 class="mb-1">{{ user.username }}</h4>
+                        <p class="text-secondary mb-0">Steam ID: {{ user.steam_id|default:"Not linked" }}</p>
+                    </div>
+                </div>
+
+                <form method="post">
+                    {% csrf_token %}
+
+                    <div class="mb-4">
+                        <label class="form-label">Steam Trade URL</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-dark border-secondary border-opacity-25 text-secondary"><i
+                                    class="bi bi-link-45deg"></i></span>
+                            <input type="url" name="trade_url" class="form-control" value="{{ user.trade_url }}"
+                                placeholder="https://steamcommunity.com/tradeoffer/new/..." required>
+                        </div>
+                        <div class="form-text text-muted">
+                            Required to send/receive trade offers. <a
+                                href="http://steamcommunity.com/id/me/tradeoffers/privacy" target="_blank"
+                                class="text-primary-accent">Find your Trade URL</a>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label">Steam API Key</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-dark border-secondary border-opacity-25 text-secondary"><i
+                                    class="bi bi-key"></i></span>
+                            <input type="text" name="steam_api_key" class="form-control"
+                                value="{{ user.steam_api_key }}" placeholder="Your Web API Key" required>
+                        </div>
+                        <div class="form-text text-muted">
+                            Required to verify trade status automatically. <a
+                                href="https://steamcommunity.com/dev/apikey" target="_blank"
+                                class="text-primary-accent">Get API Key</a>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label">TON Wallet Address (For Withdrawals)</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-dark border-secondary border-opacity-25 text-secondary"><i
+                                    class="bi bi-wallet"></i></span>
+                            <input type="text" name="wallet_address" class="form-control"
+                                value="{{ user.wallet_address }}" placeholder="EQ..." required>
+                        </div>
+                    </div>
+
+                    <hr class="border-secondary border-opacity-10 my-4">
+
+                    <button type="submit" class="btn btn-primary-accent px-4 py-2">
+                        Save Changes
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

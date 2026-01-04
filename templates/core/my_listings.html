@@ -1,0 +1,77 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}My Listings - SkinMP{% endblock %}
+
+{% block content %}
+<div class="row mb-4 animate-on-scroll">
+    <div class="col-md-6">
+        <h1><i class="bi bi-list-ul text-primary-accent me-2"></i>My Listings</h1>
+    </div>
+    <div class="col-md-6 text-md-end">
+        <a href="{% url 'core:sell_item' %}" class="btn btn-primary-accent">
+            <i class="bi bi-plus-lg me-1"></i> New Listing
+        </a>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="row mb-4 animate-on-scroll">
+    <div class="col-12">
+        <div class="glass-card p-2 d-inline-flex gap-2 rounded-pill">
+            <a href="?"
+                class="btn btn-sm rounded-pill {% if not status_filter %}btn-primary-accent{% else %}btn-outline-light border-0{% endif %}">
+                All
+            </a>
+            <a href="?status=ACTIVE"
+                class="btn btn-sm rounded-pill {% if status_filter == 'ACTIVE' %}btn-primary-accent{% else %}btn-outline-light border-0{% endif %}">
+                Active
+            </a>
+            <a href="?status=SOLD"
+                class="btn btn-sm rounded-pill {% if status_filter == 'SOLD' %}btn-primary-accent{% else %}btn-outline-light border-0{% endif %}">
+                Sold
+            </a>
+            <a href="?status=CANCELLED"
+                class="btn btn-sm rounded-pill {% if status_filter == 'CANCELLED' %}btn-primary-accent{% else %}btn-outline-light border-0{% endif %}">
+                Cancelled
+            </a>
+        </div>
+    </div>
+</div>
+
+{% if listings %}
+<div class="row g-4">
+    {% for listing in listings %}
+    <div class="col-md-6 col-lg-4 animate-on-scroll" style="animation-delay: {{ forloop.counter0|add:1 }}00ms">
+        <div class="card listing-card h-100 {% if listing.status == 'SOLD' %}opacity-75{% endif %}">
+            <div class="card-body">
+                <div class="d-flex justify-content-between mb-2">
+                    <span
+                        class="badge {% if listing.status == 'ACTIVE' %}bg-success{% elif listing.status == 'SOLD' %}bg-primary{% else %}bg-secondary{% endif %}">
+                        {{ listing.get_status_display }}
+                    </span>
+                    <small class="text-secondary">{{ listing.created_at|date:"M d" }}</small>
+                </div>
+
+                <h5 class="card-title text-truncate" title="{{ listing.market_name }}">{{ listing.market_name }}</h5>
+                <div class="price-tag fs-4 mb-3">{{ listing.price_ton }} TON</div>
+
+                <div class="d-grid gap-2">
+                    <a href="{% url 'core:listing_detail' listing.id %}"
+                        class="btn btn-sm {% if listing.status == 'ACTIVE' %}btn-outline-primary-accent{% else %}btn-outline-secondary{% endif %}">
+                        View Details
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="glass-card p-5 text-center">
+    <i class="bi bi-inbox fs-1 d-block mb-3 text-secondary"></i>
+    <h5>No listings found</h5>
+    <p class="text-muted">You haven't listed any items with this status.</p>
+</div>
+{% endif %}
+{% endblock %}

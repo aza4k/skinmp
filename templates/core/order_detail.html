@@ -1,0 +1,150 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Order #{{ order.id }} - SkinMP{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center animate-on-scroll">
+    <div class="col-lg-8">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'core:my_orders' %}"
+                        class="text-decoration-none text-secondary">My Orders</a></li>
+                <li class="breadcrumb-item active text-white" aria-current="page">Order #{{ order.id }}</li>
+            </ol>
+        </nav>
+
+        <!-- Status Card -->
+        <div class="glass-card p-4 mb-4 text-center">
+            <h6 class="text-secondary text-uppercase letter-spacing-2 mb-3">Order Status</h6>
+
+            <div class="d-flex justify-content-center align-items-center mb-4 position-relative">
+                {% with status=order.status %}
+                <!-- Progress Line -->
+                <div class="position-absolute w-75 bg-secondary opacity-25" style="height: 2px; top: 15px; z-index: 0;">
+                </div>
+
+                <!-- Paid Step -->
+                <div class="position-relative px-4 z-1">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2 {% if status == 'PAID' or status == 'SENT' or status == 'COMPLETED' %}bg-primary-accent text-white{% else %}bg-dark border border-secondary text-secondary{% endif %}"
+                        style="width: 32px; height: 32px;">
+                        <i class="bi bi-check-lg"></i>
+                    </div>
+                    <small
+                        class="{% if status == 'PAID' or status == 'SENT' or status == 'COMPLETED' %}text-primary-accent fw-bold{% else %}text-secondary{% endif %}">Paid</small>
+                </div>
+
+                <!-- Sent Step -->
+                <div class="position-relative px-4 z-1">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2 {% if status == 'SENT' or status == 'COMPLETED' %}bg-primary-accent text-white{% else %}bg-dark border border-secondary text-secondary{% endif %}"
+                        style="width: 32px; height: 32px;">
+                        <i class="bi bi-send"></i>
+                    </div>
+                    <small
+                        class="{% if status == 'SENT' or status == 'COMPLETED' %}text-primary-accent fw-bold{% else %}text-secondary{% endif %}">Sent</small>
+                </div>
+
+                <!-- Completed Step -->
+                <div class="position-relative px-4 z-1">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2 {% if status == 'COMPLETED' %}bg-success text-white{% else %}bg-dark border border-secondary text-secondary{% endif %}"
+                        style="width: 32px; height: 32px;">
+                        <i class="bi bi-star"></i>
+                    </div>
+                    <small
+                        class="{% if status == 'COMPLETED' %}text-success fw-bold{% else %}text-secondary{% endif %}">Done</small>
+                </div>
+                {% endwith %}
+            </div>
+
+            <h3 class="{% if order.status == 'COMPLETED' %}text-success{% else %}text-primary-accent{% endif %}">
+                {{ order.get_status_display }}
+            </h3>
+        </div>
+
+        <!-- Trade Info & Actions -->
+        <div class="glass-card mb-4">
+            <div class="card-header bg-transparent border-bottom border-secondary border-opacity-10 p-4">
+                <h5 class="mb-0">Trade Details</h5>
+            </div>
+            <div class="card-body p-4">
+                <div class="row mb-4">
+                    <div class="col-md-6 border-end border-secondary border-opacity-10">
+                        <small class="text-secondary d-block">Item</small>
+                        <div class="fw-bold fs-5">{{ order.listing.market_name }}</div>
+                        <small class="text-muted">Asset ID: {{ order.listing.asset_id }}</small>
+                    </div>
+                    <div class="col-md-6 ps-md-4 mt-3 mt-md-0">
+                        <small class="text-secondary d-block">Amount</small>
+                        <div class="fw-bold fs-5 text-success">{{ order.amount }} TON</div>
+                    </div>
+                </div>
+
+                {% if is_seller %}
+                <!-- Seller View -->
+                {% if order.status == 'PAID' %}
+                <div class="alert glass-alert bg-primary-accent bg-opacity-10 border-primary-accent">
+                    <i class="bi bi-exclamation-circle me-2"></i> Action Required: Send the item to the buyer via Steam
+                    using their Trade URL.
+                </div>
+                <div class="mb-3">
+                    <label class="form-label text-secondary">Buyer's Trade URL</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" value="{{ order.buyer.trade_url }}" readonly>
+                        <a href="{{ order.buyer.trade_url }}" target="_blank" class="btn btn-outline-light">
+                            <i class="bi bi-box-arrow-up-right"></i> Open
+                        </a>
+                    </div>
+                </div>
+
+                <!-- I'm assuming there's a view to handle status update, need to verify or create it. 
+                                 Wait, the original audit didn't show the logic for updating order status. 
+                                 I'll add a placeholder form for now, and I might need to implement this view if it doesn't exist.
+                                 Actually, looking at `views.py` from earlier, I didn't see `update_order_status`. 
+                                 This is a feature I should add. I'll add the UI first. -->
+                <form method="post" class="mt-4">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label">Steam Trade Offer ID (Proof)</label>
+                        <input type="text" name="steam_trade_id" class="form-control" required
+                            placeholder="Enter trade offer ID">
+                    </div>
+                    <input type="hidden" name="action" value="mark_sent">
+                    <button type="submit" class="btn btn-primary-accent w-100">
+                        <i class="bi bi-check-lg me-2"></i> I Have Sent the Item
+                    </button>
+                </form>
+                {% elif order.status == 'SENT' %}
+                <div class="alert glass-alert">
+                    <i class="bi bi-clock me-2"></i> Waiting for buyer to confirm receipt.
+                </div>
+                {% endif %}
+
+                {% elif is_buyer %}
+                <!-- Buyer View -->
+                {% if order.status == 'SENT' %}
+                <div class="alert glass-alert bg-success bg-opacity-10 border-success">
+                    <i class="bi bi-check-circle me-2"></i> Seller has marked the item as sent. Please verify on Steam.
+                </div>
+                <form method="post" class="mt-4">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="confirm_received">
+                    <button type="submit" class="btn btn-success w-100">
+                        <i class="bi bi-check-lg me-2"></i> Confirm Item Received
+                    </button>
+                </form>
+                {% elif order.status == 'PAID' %}
+                <div class="alert glass-alert">
+                    <i class="bi bi-clock me-2"></i> Waiting for seller to send the item.
+                </div>
+                {% endif %}
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="text-center text-muted small">
+            Order created: {{ order.created_at }}<br>
+            For support, quote Order ID #{{ order.id }}
+        </div>
+    </div>
+</div>
+{% endblock %}

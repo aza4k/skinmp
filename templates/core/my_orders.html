@@ -1,0 +1,141 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}My Orders - SkinMP{% endblock %}
+
+{% block content %}
+<div class="row mb-4 animate-on-scroll">
+    <div class="col-12">
+        <h1><i class="bi bi-bag text-primary-accent me-2"></i>My Orders</h1>
+    </div>
+</div>
+
+<!-- Tabs -->
+<ul class="nav nav-pills mb-4 gap-2 animate-on-scroll" id="orderTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active rounded-pill px-4" id="buying-tab" data-bs-toggle="tab" data-bs-target="#buying"
+            type="button" role="tab">
+            Buying <span class="badge bg-white text-dark ms-2">{{ orders_as_buyer|length }}</span>
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link rounded-pill px-4" id="selling-tab" data-bs-toggle="tab" data-bs-target="#selling"
+            type="button" role="tab">
+            Selling <span class="badge bg-white text-dark ms-2">{{ orders_as_seller|length }}</span>
+        </button>
+    </li>
+</ul>
+
+<div class="tab-content" id="orderTabsContent">
+    <!-- Buying Tab -->
+    <div class="tab-pane fade show active" id="buying" role="tabpanel">
+        {% if orders_as_buyer %}
+        <div class="row g-4">
+            {% for order in orders_as_buyer %}
+            <div class="col-lg-6 animate-on-scroll">
+                <div class="glass-card p-4 h-100 position-relative hover-highlight">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div>
+                            <h5 class="mb-1">Order #{{ order.id }}</h5>
+                            <small class="text-secondary">{{ order.created_at|date:"F j, Y, H:i" }}</small>
+                        </div>
+                        <span
+                            class="badge {% if order.status == 'COMPLETED' %}bg-success{% elif order.status == 'PAID' or order.status == 'SENT' %}bg-warning text-dark{% else %}bg-secondary{% endif %}">
+                            {{ order.get_status_display }}
+                        </span>
+                    </div>
+
+                    <div class="d-flex align-items-center mb-3 p-2 rounded bg-dark">
+                        <i class="bi bi-box-seam fs-3 me-3 text-secondary"></i>
+                        <div class="text-truncate">
+                            <div class="fw-bold">{{ order.listing.market_name }}</div>
+                            <small class="text-secondary">Seller: {{ order.seller.username }}</small>
+                        </div>
+                    </div>
+
+                    <div
+                        class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top border-secondary border-opacity-10">
+                        <div class="fw-bold text-success">{{ order.amount }} TON</div>
+                        <a href="{% url 'core:order_detail' order.id %}"
+                            class="btn btn-sm btn-primary-accent stretched-link">
+                            Track Order
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="glass-card p-5 text-center">
+            <p class="text-muted mb-0">No purchase history found.</p>
+            <a href="{% url 'core:browse_listings' %}" class="btn btn-link text-primary-accent">Browse Market</a>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Selling Tab -->
+    <div class="tab-pane fade" id="selling" role="tabpanel">
+        {% if orders_as_seller %}
+        <div class="row g-4">
+            {% for order in orders_as_seller %}
+            <div class="col-lg-6">
+                <div class="glass-card p-4 h-100 position-relative hover-highlight">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div>
+                            <h5 class="mb-1">Order #{{ order.id }}</h5>
+                            <small class="text-secondary">{{ order.created_at|date:"F j, Y, H:i" }}</small>
+                        </div>
+                        <span
+                            class="badge {% if order.status == 'COMPLETED' %}bg-success{% elif order.status == 'PAID' or order.status == 'SENT' %}bg-warning text-dark{% else %}bg-secondary{% endif %}">
+                            {{ order.get_status_display }}
+                        </span>
+                    </div>
+
+                    <div class="d-flex align-items-center mb-3 p-2 rounded bg-dark">
+                        <i class="bi bi-box-seam fs-3 me-3 text-secondary"></i>
+                        <div class="text-truncate">
+                            <div class="fw-bold">{{ order.listing.market_name }}</div>
+                            <small class="text-secondary">Buyer: {{ order.buyer.username }}</small>
+                        </div>
+                    </div>
+
+                    <div
+                        class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top border-secondary border-opacity-10">
+                        <div class="fw-bold text-success">+{{ order.amount }} TON</div>
+                        <a href="{% url 'core:order_detail' order.id %}"
+                            class="btn btn-sm btn-primary-accent stretched-link">
+                            Manage Order
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="glass-card p-5 text-center">
+            <p class="text-muted mb-0">No sales history found.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+    .nav-pills .nav-link {
+        color: var(--text-secondary);
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid transparent;
+    }
+
+    .nav-pills .nav-link.active {
+        background-color: var(--primary-accent);
+        color: white;
+        box-shadow: 0 4px 12px rgba(111, 66, 193, 0.4);
+    }
+
+    .hover-highlight:hover {
+        border-color: var(--primary-accent);
+        transform: translateY(-2px);
+        transition: all 0.2s;
+    }
+</style>
+{% endblock %}

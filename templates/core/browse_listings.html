@@ -1,0 +1,150 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Browse Listings - SkinMP{% endblock %}
+
+{% block content %}
+<div class="row mb-4 animate-on-scroll">
+    <div class="col-md-6">
+        <h2 class="mb-0"><i class="bi bi-search text-primary-accent me-2"></i>Browse Market</h2>
+    </div>
+    <div class="col-md-6">
+        <form method="get" class="d-flex gap-2">
+            <input type="text" name="search" class="form-control" placeholder="Search skin name..."
+                value="{{ search_query }}">
+            <button type="submit" class="btn btn-primary-accent">Search</button>
+        </form>
+    </div>
+</div>
+
+{% if page_obj %}
+<div class="row g-4 mb-5">
+    {% for listing in page_obj %}
+    <div class="col-md-6 col-lg-4 col-xl-3 animate-on-scroll" style="animation-delay: {{ forloop.counter0|add:1 }}00ms">
+        <div class="card listing-card h-100">
+            <div class="card-img-top bg-dark d-flex align-items-center justify-content-center" style="height: 200px;">
+                <i class="bi bi-image text-secondary fs-1"></i>
+            </div>
+
+            <div class="card-body">
+                <h5 class="card-title text-truncate mb-2" title="{{ listing.market_name }}">{{ listing.market_name }}
+                </h5>
+
+                <div class="d-flex align-items-center mb-3">
+                    <img src="https://ui-avatars.com/api/?name={{ listing.seller.username }}&background=random"
+                        class="rounded-circle me-2" width="20" height="20">
+                    <small class="text-secondary">{{ listing.seller.username }}</small>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-end">
+                    <div class="price-tag">{{ listing.price_ton }} <small class="fs-6 text-muted">TON</small></div>
+                    <a href="{% url 'core:listing_detail' listing.id %}" class="btn btn-sm btn-primary-accent">
+                        View
+                    </a>
+                </div>
+            </div>
+
+            <div class="card-footer bg-transparent border-top border-secondary border-opacity-10 py-2">
+                <small class="text-muted">
+                    <i class="bi bi-clock me-1"></i> {{ listing.created_at|timesince }} ago
+                </small>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Pagination -->
+{% if page_obj.paginator.num_pages > 1 %}
+<div class="row mb-5">
+    <div class="col-12 d-flex justify-content-center">
+        <nav aria-label="Page navigation">
+            <ul class="pagination pagination-dark">
+                {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link"
+                        href="?page={{ page_obj.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}"
+                        aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+                {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link">&laquo;</span>
+                </li>
+                {% endif %}
+
+                {% for i in page_obj.paginator.page_range %}
+                {% if page_obj.number == i %}
+                <li class="page-item active" aria-current="page">
+                    <span class="page-link">{{ i }}</span>
+                </li>
+                {% else %}
+                <li class="page-item">
+                    <a class="page-link"
+                        href="?page={{ i }}{% if search_query %}&search={{ search_query }}{% endif %}">{{ i }}</a>
+                </li>
+                {% endif %}
+                {% endfor %}
+
+                {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link"
+                        href="?page={{ page_obj.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}"
+                        aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+                {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link">&raquo;</span>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+</div>
+{% endif %}
+
+{% else %}
+<div class="row">
+    <div class="col-12">
+        <div class="alert glass-alert text-center py-5">
+            <i class="bi bi-search fs-1 d-block mb-3 text-secondary"></i>
+            <h5>No listings found</h5>
+            {% if search_query %}
+            <p class="text-muted">No results for "{{ search_query }}". Try a different search term.</p>
+            <a href="{% url 'core:browse_listings' %}" class="btn btn-outline-light mt-2">Clear Search</a>
+            {% else %}
+            <p class="text-muted">There are no active listings at the moment.</p>
+            <a href="{% url 'core:sell_item' %}" class="btn btn-primary-accent mt-2">Create Listing</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<style>
+    .pagination-dark .page-link {
+        background-color: var(--bg-card);
+        border-color: var(--glass-border);
+        color: var(--text-primary);
+    }
+
+    .pagination-dark .page-link:hover {
+        background-color: var(--primary-accent);
+        color: white;
+        border-color: var(--primary-accent);
+    }
+
+    .pagination-dark .page-item.active .page-link {
+        background-color: var(--primary-accent);
+        border-color: var(--primary-accent);
+    }
+
+    .pagination-dark .page-item.disabled .page-link {
+        background-color: var(--bg-dark);
+        color: var(--text-secondary);
+    }
+</style>
+{% endblock %}

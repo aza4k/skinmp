@@ -1,0 +1,187 @@
+:root {
+    --bg-dark: #0f0f13;
+    --bg-card: #1a1a20;
+    --primary-accent: #6f42c1; /* Purple */
+    --secondary-accent: #0dcaf0; /* Cyan */
+    --success-accent: #198754; /* Green */
+    --text-primary: #ffffff;
+    --text-secondary: #adb5bd;
+    
+    --glass-bg: rgba(26, 26, 32, 0.7);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --glass-blur: 10px;
+}
+
+body {
+    background-color: var(--bg-dark);
+    color: var(--text-primary);
+    font-family: 'Outfit', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.text-primary-accent {
+    color: var(--primary-accent) !important;
+}
+
+/* Glassmorphism Utilities */
+.glass-nav {
+    background: rgba(15, 15, 19, 0.85);
+    backdrop-filter: blur(var(--glass-blur));
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.glass-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+}
+
+.glass-dropdown {
+    background: #1a1a20;
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+.glass-alert {
+    background: rgba(26, 26, 32, 0.9);
+    border: 1px solid var(--glass-border);
+    color: var(--text-primary);
+}
+
+/* Custom Alert Colors */
+.alert-success { border-left: 4px solid var(--success-accent); }
+.alert-danger { border-left: 4px solid #dc3545; }
+.alert-warning { border-left: 4px solid #ffc107; }
+.alert-info { border-left: 4px solid var(--secondary-accent); }
+
+/* Components */
+.main-content {
+    padding-top: 100px; /* Offset for fixed navbar */
+    flex: 1;
+}
+
+.navbar-brand {
+    font-size: 1.5rem;
+}
+
+.nav-link {
+    color: var(--text-secondary) !important;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+.nav-link:hover, .nav-link.active {
+    color: var(--text-primary) !important;
+}
+
+.btn-primary-accent {
+    background: linear-gradient(135deg, var(--primary-accent), #563d7c);
+    border: none;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-primary-accent:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(111, 66, 193, 0.4);
+    color: white;
+}
+
+.user-pill {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 50px;
+    padding: 6px 16px 6px 6px !important;
+    border: 1px solid transparent;
+    transition: all 0.2s;
+}
+
+.user-pill:hover, .show > .user-pill {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--glass-border);
+    color: white !important;
+}
+
+.dropdown-item {
+    color: var(--text-secondary);
+    padding: 10px 20px;
+}
+
+.dropdown-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-primary);
+}
+
+.dropdown-divider {
+    border-top-color: var(--glass-border);
+}
+
+/* Listings */
+.listing-card {
+    transition: transform 0.3s, box-shadow 0.3s;
+    background: var(--bg-card);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+.listing-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+    border-color: var(--primary-accent);
+}
+
+.price-tag {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--secondary-accent);
+    text-shadow: 0 0 10px rgba(13, 202, 240, 0.2);
+}
+
+/* Stat Cards (Home) */
+.stat-card {
+    background: linear-gradient(145deg, #1a1a20, #15151a);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    padding: 24px;
+}
+
+/* Forms */
+.form-control, .form-select {
+    background-color: #121216;
+    border: 1px solid var(--glass-border);
+    color: var(--text-primary);
+    padding: 12px;
+}
+
+.form-control:focus, .form-select:focus {
+    background-color: #15151a;
+    border-color: var(--primary-accent);
+    box-shadow: 0 0 0 0.25rem rgba(111, 66, 193, 0.25);
+    color: var(--text-primary);
+}
+
+/* Footer */
+.footer {
+    border-top: 1px solid var(--glass-border);
+    background: #0a0a0c;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in {
+    animation: fadeIn 0.4s ease-out forwards;
+}

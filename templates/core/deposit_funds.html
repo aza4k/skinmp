@@ -1,0 +1,131 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Deposit Funds - SkinMP{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center animate-on-scroll">
+    <div class="col-lg-8">
+        <h1 class="mb-4"><i class="bi bi-wallet2 text-primary-accent me-2"></i>Deposit Funds</h1>
+
+        <!-- Deposit Instructions Card -->
+        <div class="glass-card p-5 mb-5">
+            <div class="text-center mb-5">
+                <div class="d-inline-block p-3 rounded-circle bg-primary-accent bg-opacity-10 mb-3">
+                    <img src="https://ton.org/download/ton_symbol.png" width="64" height="64" alt="TON">
+                </div>
+                <h4>Send TON to receive funds</h4>
+                <p class="text-secondary">Your balance will be updated automatically after 1 confirmation.</p>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label text-secondary small text-uppercase fw-bold">Platform Wallet Address</label>
+                <div class="input-group">
+                    <input type="text" class="form-control font-monospace" value="{{ platform_wallet }}"
+                        id="walletAddress" readonly>
+                    <button class="btn btn-outline-light" type="button" onclick="copyToClipboard('walletAddress')">
+                        <i class="bi bi-clipboard"></i> Copy
+                    </button>
+                </div>
+            </div>
+
+            <div class="alert glass-alert bg-warning text-dark border-warning mb-4">
+                <div class="d-flex">
+                    <i class="bi bi-exclamation-triangle-fill fs-4 me-3"></i>
+                    <div>
+                        <h6 class="fw-bold mb-1">IMPORTANT: Include Comment Code</h6>
+                        <p class="mb-0 small">You MUST include the code below as a <strong>comment/memo</strong> in your
+                            transaction. Without it, we cannot identify your deposit.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label text-secondary small text-uppercase fw-bold">Your Unique Comment Code</label>
+                <div class="input-group input-group-lg">
+                    <input type="text" class="form-control font-monospace text-center fw-bold text-primary-accent"
+                        value="{{ comment_code }}" id="commentCode" readonly>
+                    <button class="btn btn-primary-accent" type="button" onclick="copyToClipboard('commentCode')">
+                        <i class="bi bi-clipboard"></i> Copy Code
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Deposits -->
+        <h5 class="mb-3">Recent Deposits</h5>
+        <div class="glass-card overflow-hidden">
+            <div class="table-responsive">
+                <table class="table table-dark table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th class="bg-transparent border-secondary border-opacity-10 text-secondary ps-4">Date</th>
+                            <th class="bg-transparent border-secondary border-opacity-10 text-secondary">Amount</th>
+                            <th class="bg-transparent border-secondary border-opacity-10 text-secondary">Status</th>
+                            <th class="bg-transparent border-secondary border-opacity-10 text-secondary pe-4">TX Hash
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if recent_deposits %}
+                        {% for deposit in recent_deposits %}
+                        <tr>
+                            <td class="bg-transparent border-secondary border-opacity-10 ps-4">{{
+                                deposit.created_at|date:"M d, H:i" }}</td>
+                            <td class="bg-transparent border-secondary border-opacity-10 fw-bold text-success">+{{
+                                deposit.amount }} TON</td>
+                            <td class="bg-transparent border-secondary border-opacity-10">
+                                <span
+                                    class="badge {% if deposit.status == 'CONFIRMED' %}bg-success{% elif deposit.status == 'PENDING' %}bg-warning text-dark{% else %}bg-secondary{% endif %}">
+                                    {{ deposit.get_status_display }}
+                                </span>
+                            </td>
+                            <td class="bg-transparent border-secondary border-opacity-10 pe-4">
+                                <a href="https://tonviewer.com/transaction/{{ deposit.tx_hash }}" target="_blank"
+                                    class="text-secondary text-decoration-none font-monospace small">
+                                    {{ deposit.tx_hash|truncatechars:10 }} <i class="bi bi-box-arrow-up-right ms-1"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        {% else %}
+                        <tr>
+                            <td colspan="4" class="text-center py-4 text-muted bg-transparent">No recent deposits found.
+                            </td>
+                        </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+    function copyToClipboard(elementId) {
+        var copyText = document.getElementById(elementId);
+        copyText.select();
+        copyText.setSelectionRange(0, 99999); // For mobile devices
+        navigator.clipboard.writeText(copyText.value).then(function () {
+            // Could show a toast here
+            const btn = copyText.nextElementSibling;
+            const originalHtml = btn.innerHTML;
+            btn.innerHTML = '<i class="bi bi-check2"></i> Copied!';
+            btn.classList.add('btn-success');
+            btn.classList.remove('btn-outline-light', 'btn-primary-accent');
+
+            setTimeout(() => {
+                btn.innerHTML = originalHtml;
+                btn.classList.remove('btn-success');
+                if (elementId === 'commentCode') {
+                    btn.classList.add('btn-primary-accent');
+                } else {
+                    btn.classList.add('btn-outline-light');
+                }
+            }, 2000);
+        });
+    }
+</script>
+{% endblock %}
+{% endblock %}
