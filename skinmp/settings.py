@@ -130,6 +130,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_DIRS = [BASE_DIR / 'static']
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
@@ -150,6 +152,7 @@ AUTHENTICATION_BACKENDS = (
 
 # Social Auth Settings
 SOCIAL_AUTH_STEAM_API_KEY = os.getenv('STEAM_API_KEY', '')
+STEAMWEBAPI_KEY = os.getenv('STEAMWEBAPI_KEY', '')
 SOCIAL_AUTH_STEAM_EXTRA_DATA = ['player']
 
 # Login URLs
